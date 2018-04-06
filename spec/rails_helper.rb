@@ -40,6 +40,10 @@ end
 ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
+ config.include FactoryBot::Syntax::Methods
+end
+
+RSpec.configure do |config|
   # Devise Controller Spec Configuration
   config.include Devise::Test::ControllerHelpers, :type => :controller
   config.extend ControllerMacros, :type => :controller

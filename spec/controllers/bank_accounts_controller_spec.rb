@@ -13,7 +13,8 @@ RSpec.describe BankAccountsController, type: :controller do
 
   describe "GET #index" do
     it "returns http success" do
-      @user.bank_accounts.create! valid_attributes
+      FactoryBot.create(:bank_account, user: @user)
+      binding.pry
       get :index
       expect(response).to have_http_status(:success)
     end
@@ -21,7 +22,7 @@ RSpec.describe BankAccountsController, type: :controller do
 
   describe "GET #show" do
     it "returns http success" do
-      bank_account = @user.bank_accounts.create! valid_attributes
+      bank_account = FactoryBot.create(:bank_account, user: @user)
       get :show, params: {id: bank_account.id}
       expect(response).to have_http_status(:success)
     end
@@ -36,7 +37,7 @@ RSpec.describe BankAccountsController, type: :controller do
 
   describe "GET #edit" do
     it "returns http success" do
-      bank_account = @user.bank_accounts.create! valid_attributes
+      bank_account = FactoryBot.create(:bank_account, user: @user)
       get :edit, params: {id: bank_account.id}
       expect(response).to have_http_status(:success)
     end
@@ -71,36 +72,37 @@ RSpec.describe BankAccountsController, type: :controller do
   end
 
   describe "PUT #update" do
+    let(:new_attributes) {
+      { amount: 220 }
+    }
+
+    before(:each) do
+      @bank_account = FactoryBot.create(:bank_account, user: @user)
+    end
+
     context "with valid params" do
-      let(:new_attributes) {
-        { amount: 220 }
-      }
 
       it "updates the requested bank_account" do
-        bank_account = @user.bank_accounts.create! valid_attributes
-        put :update, params: {id: bank_account.id, bank_account: new_attributes}
-        bank_account.reload
-        expect(bank_account.amount).to eq(new_attributes[:amount])
+        put :update, params: {id: @bank_account.id, bank_account: new_attributes}
+        @bank_account.reload
+        expect(@bank_account.amount).to eq(new_attributes[:amount])
       end
 
       it "redirects to the bank_account" do
-        bank_account = @user.bank_accounts.create! valid_attributes
-        put :update, params: {id: bank_account.id, bank_account: valid_attributes}
-        expect(response).to redirect_to(bank_account)
+        put :update, params: {id: @bank_account.id, bank_account: valid_attributes}
+        expect(response).to redirect_to(@bank_account)
       end
     end
 
     context "with invalid params" do
       it 'does not update the bank account' do
-        bank_account = @user.bank_accounts.create! valid_attributes
-        put :update, params: {id: bank_account.id, bank_account: invalid_attributes}
-        bank_account.reload
-        expect(bank_account.institution).to_not eq(invalid_attributes[:institution])
+        put :update, params: {id: @bank_account.id, bank_account: invalid_attributes}
+        @bank_account.reload
+        expect(@bank_account.institution).to_not eq(invalid_attributes[:institution])
       end
 
       it "returns a success response (i.e. to display the 'edit' template)" do
-        bank_account = @user.bank_accounts.create! valid_attributes
-        put :update, params: {id: bank_account.id, bank_account: invalid_attributes}
+        put :update, params: {id: @bank_account.id, bank_account: invalid_attributes}
         expect(response).to be_success
       end
     end
@@ -108,14 +110,15 @@ RSpec.describe BankAccountsController, type: :controller do
 
   describe "DELETE #destroy" do
     it "destroys the requested bank_account" do
-      bank_account = @user.bank_accounts.create! valid_attributes
+      bank_account = FactoryBot.create(:bank_account, user: @user)
+      binding.pry
       expect {
         delete :destroy, params: {id: bank_account.id}
       }.to change(BankAccount, :count).by(-1)
     end
 
     it "redirects to the bank_accounts list" do
-      bank_account = @user.bank_accounts.create! valid_attributes
+      bank_account = FactoryBot.create(:bank_account, user: @user)
       delete :destroy, params: {id: bank_account.id}
       expect(response).to redirect_to(bank_accounts_url)
     end
